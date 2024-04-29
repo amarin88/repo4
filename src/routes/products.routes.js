@@ -50,7 +50,10 @@ router.post("/", async (req, res) => {
     const product = req.body; // Obtiene el body de la request que contiene los datos del producto
     const newProduct = await productManager.addProduct(product); // Agrega el nuevo producto utilizando el gestor de productos
 
-    res.status(201).json(newProduct); // Responde con el nuevo producto creado
+    res.status(201).json({
+      message: "Product created successfully.",
+      newProduct: newProduct
+    }); // Responde con el nuevo producto creado
     console.log("Product created succesfuly");
   } catch (error) {
     console.log(error); // Registra cualquier error en la consola
@@ -66,9 +69,12 @@ router.put("/:pid", async (req, res) => {
   try {
     const { pid } = req.params; // Obtiene el parámetro de la ruta "pid" (product id)
     const product = req.body; // Obtiene el body de la request que contiene los nuevos datos del producto
-    const updateProduct = await productManager.updateProduct(pid, product); // Actualiza el producto utilizando el manager de productos
+    const updateProduct = await productManager.updateProduct(+pid, product); // Actualiza el producto utilizando el manager de productos
 
-    res.status(201).json(updateProduct); // Responde con el producto actualizado
+    res.status(201).json({
+      message: `The product with id number: ${pid} has been successfully updated.`,
+      updatedProduct: updateProduct
+  }); // Responde con el producto actualizado
     console.log("Product has been updated correctly");
   } catch (error) {
     console.log(error); // Registra cualquier error en la consola
@@ -83,11 +89,12 @@ router.put("/:pid", async (req, res) => {
 router.delete("/:pid", async (req, res) => {
   try {
     const { pid } = req.params; // Obtiene el parámetro de la ruta "pid" (product id)
-    await productManager.deleteProduct(pid); // Elimina el producto utilizando el manager de productos
+    await productManager.deleteProduct(+pid); // Elimina el producto utilizando el manager de productos
 
     res.status(201).json({
         message: `The product with id number: ${pid} has been successfully deleted.`,
       }); // Responde con un mensaje de éxito
+    console.log("Product has been deleted correctly");
   } catch (error) {
     console.log(error); // Registra cualquier error en la consola
     return res.json({
