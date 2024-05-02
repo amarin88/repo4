@@ -34,6 +34,7 @@ const addProduct = async (product) => {
   products.push(newProduct); //Agrega el nuevo producto al array
 
   await fs.promises.writeFile(pathFile, JSON.stringify(products)); //Escribe los productos en el archivo JSON
+  return newProduct;
 };
 
 //Función asíncrona para obtener los productos desde el archivo JSON
@@ -50,9 +51,10 @@ const getProductById = async (id) => {
   await getProducts(); //Obtiene todos los productos
   const product = products.find((product) => product.id === parseInt(id)); //Busca un producto por su ID
   if (!product) {
-    console.log(`Product with id: ${id} is not found`);
-    return;
-  }; //Si no se encuentra el producto, muestra un mensaje y devuelve undefined
+    const error = new Error(`Product with id: ${id} is not found`);
+    error.status = 404;
+    throw error;
+  }; //Si no se encuentra el producto, muestra un mensaje y devuelve error
 
   console.log(product);
   return product;
@@ -61,18 +63,19 @@ const getProductById = async (id) => {
 //Función asíncrona para actualizar un producto
 const updateProduct = async (id, dataProduct) => {
   await getProducts(); //Obtiene todos los productos
-  const index = products.findIndex((product) => product.id === id); //Encuentra el id del producto a actualizar
+  const index = products.findIndex((product) => product.id === parseInt(id)); //Encuentra el id del producto a actualizar
   products[index] = {
     ...products[index],
     ...dataProduct,
   }; //Actualiza el producto con los nuevos datos
   await fs.promises.writeFile(pathFile, JSON.stringify(products)); //Escribe los productos actualizados en el archivo JSON
+  return products[index];
 };
 
 // Función asíncrona para eliminar un producto por su ID
 const deleteProduct = async (id) => {
   await getProducts(); //Obtiene todos los productos
-  products = products.filter((product) => product.id !== id); //Filtra los productos y excluye el que coincida con el ID dado
+  products = products.filter((product) => product.id !== parseInt(id)); //Filtra los productos y excluye el que coincida con el ID dado
   await fs.promises.writeFile(pathFile, JSON.stringify(products)); //Escribe los productos actualizados en el archivo JSON
 };
 

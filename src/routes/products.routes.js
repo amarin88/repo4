@@ -52,12 +52,12 @@ router.post("/", async (req, res) => {
 
     res.status(201).json({
       message: "Product created successfully.",
-      newProduct: newProduct
+      newProduct: product
     }); // Responde con el nuevo producto creado
-    console.log("Product created succesfuly");
+    console.log("Product created successfully");
   } catch (error) {
     console.log(error); // Registra cualquier error en la consola
-    return res.json({
+    return res.status(400).json({
       status: error.status || 500, // Devuelve el código de estado del error o 500 si no está definido
       response: error.message || "ERROR", // Devuelve el mensaje de error o "ERROR" si no está definido
     });
@@ -78,7 +78,7 @@ router.put("/:pid", async (req, res) => {
     console.log("Product has been updated correctly");
   } catch (error) {
     console.log(error); // Registra cualquier error en la consola
-    return res.json({
+    return res.status(400).json({
       status: error.status || 500, // Devuelve el código de estado del error o 500 si no está definido
       response: error.message || "ERROR", // Devuelve el mensaje de error o "ERROR" si no está definido
     });
@@ -89,7 +89,17 @@ router.put("/:pid", async (req, res) => {
 router.delete("/:pid", async (req, res) => {
   try {
     const { pid } = req.params; // Obtiene el parámetro de la ruta "pid" (product id)
-    await productManager.deleteProduct(+pid); // Elimina el producto utilizando el manager de productos
+    const product = await productManager.getProductById(+pid);
+    
+
+  if (!product) {
+      return res.status(404).json({
+        status: 404,
+        response: `Product with id: ${pid} is not found`,
+      });
+  };//Valida que el "pid" (product id) existe, sino retorna error
+
+  await productManager.deleteProduct(+pid); // Elimina el producto utilizando el manager de productos
 
     res.status(201).json({
         message: `The product with id number: ${pid} has been successfully deleted.`,
