@@ -1,6 +1,10 @@
 // Imports de los módulos necesarios
 import express from "express";
 import router from "./routes/index.js"; // Importa el router principal
+import { connectMongoDB } from "./config/mongoDb.config.js";//Importamos la configuración de MongoDB
+
+connectMongoDB();//Conectamos con mongoDB
+
 
 // Instancia de express
 const app = express();
